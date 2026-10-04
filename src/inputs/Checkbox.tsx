@@ -28,10 +28,10 @@ export const Checkbox = (props: CheckboxProps) => {
     />
   );
 
-  // On mobile, every other field's label sits above it (see
-  // `EventEditor.module.css`'s `.form`) -- but stacking a checkbox below
-  // its own one-word label would waste a row for no reason, so it's kept
-  // as a single "checkbox + label" row instead, matching the indent
+  // On mobile an app's form grid typically collapses to one column, so
+  // every other field's label sits above its control -- but stacking a
+  // checkbox below its own one-word label would waste a row for no reason.
+  // It stays a single "checkbox + label" row instead, matching the indent
   // reserved by other fields' labels (see `inputs.module.css`'s `.label`).
   if (isMobile) {
     return (

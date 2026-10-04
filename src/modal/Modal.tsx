@@ -8,13 +8,13 @@ import styles from "./Modal.module.css";
  * dismiss swipe; released short of it springs back open. */
 const DISMISS_THRESHOLD_RATIO = 0.2;
 /** Total movement before a drag commits to being either the header's
- * vertical dismiss or (if `onHorizontalSwipe` is given) a horizontal one --
- * matches `useDayTouchSelection.ts`'s own `MOVE_CANCEL_PX`. */
+ * vertical dismiss or (if `onHorizontalSwipe` is given) a horizontal one.
+ * Worth matching against whatever threshold the app's own drag gestures
+ * use, so the two feel like one interaction model. */
 const AXIS_LOCK_PX = 10;
-/** Minimum horizontal travel before a swipe fires `onHorizontalSwipe` --
- * matches `useSwipeNavigation.ts`'s own `SWIPE_MIN_DISTANCE_PX`, for a
- * consistent feel with the page-level swipe gesture it's the in-modal
- * counterpart of. */
+/** Minimum horizontal travel before a swipe fires `onHorizontalSwipe`.
+ * Chosen to match a typical page-level swipe-navigation threshold, since
+ * this is the in-modal counterpart of that gesture. */
 const HORIZONTAL_SWIPE_MIN_DISTANCE_PX = 60;
 
 export interface ModalProps extends React.PropsWithChildren {
@@ -112,13 +112,11 @@ export const Modal = ({
   // Native Pointer Events (not separate mouse/touch listeners): a single
   // unified stream, and no need to worry about implicit touch capture
   // here since the dialog/header elements themselves never get removed/
-  // replaced mid-gesture the way calendar day cells can (see
-  // `useDragEdgeNavigation.ts` for that specific problem). Also mirrors
-  // native touchmove/touchend's own propagation to `document` while a
-  // horizontal drag is in progress -- otherwise `useSwipeNavigation.ts`'s
-  // own page-level swipe-navigation (also listening on `document`) would
-  // *also* react to the same gesture and flip the background month/
-  // quarter behind the modal.
+  // replaced mid-gesture the way a virtualised grid's cells can. It also
+  // stops native touchmove/touchend from reaching `document` while a
+  // horizontal drag is in progress -- otherwise an app's own page-level
+  // swipe navigation (also listening on `document`) would react to the
+  // same gesture and page the content behind the modal.
   React.useEffect(() => {
     if (!isMobile) return undefined;
     const header = headerRef.current;
@@ -134,8 +132,8 @@ export const Modal = ({
     // `touchend` (what `stopIfHorizontal` below needs to suppress) fires
     // *after* `pointerup` for the same release, by which point `axis`
     // would already read `null` again, so `stopIfHorizontal` was never
-    // actually suppressing it -- letting `useSwipeNavigation.ts`'s own
-    // page-level `touchend` listener also fire for the same gesture.
+    // actually suppressing it -- letting the app's own page-level
+    // `touchend` listener also fire for the same gesture.
     let wasHorizontal = false;
 
     const handlePointerDown = (event: PointerEvent) => {
@@ -196,8 +194,8 @@ export const Modal = ({
     document.addEventListener("pointermove", handlePointerMove);
     document.addEventListener("pointerup", finishDrag);
     document.addEventListener("pointercancel", finishDrag);
-    // Capture phase, same reasoning as `useDragEdgeNavigation.ts`'s own
-    // global listeners: needs to run regardless of what stops propagation
+    // Capture phase, for the same reason any global drag listener wants
+    // it: it has to run regardless of what stops propagation
     // further down, and only actually calls `stopPropagation()` once a
     // drag on this dialog has been confirmed horizontal (`wasHorizontal`,
     // not the live `axis` -- see its own comment above).

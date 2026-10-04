@@ -1,7 +1,6 @@
 /* Wraps a `DateSegmentGroup` together with whatever trigger the app puts
-   beside it (a calendar-icon button, say). Exported as `segmentField` from
-   the barrel's stylesheet so an app can reuse the row rather than
-   reinventing its spacing. */
+   beside it (a calendar-icon button, say). Local to this module: an app
+   building its own field around the group styles that row itself. */
 .picker {
   display: inline-flex;
   align-items: center;

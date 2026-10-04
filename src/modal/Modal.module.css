@@ -23,7 +23,7 @@
      `react-select`'s viewport-relative fixed-position dropdown math (it's
      portaled directly into this `<dialog>`, via `menuPortalTarget`, to
      escape the dialog's *stacking* context/top-layer without rendering
-     behind it -- see e.g. `CategorySelect.tsx`). Padding/border reset to
+     behind it). Padding/border reset to
      0 since `.panel` (a plain, unfiltered div) now owns the actual visual
      chrome and its own full-size layout. */
   position: fixed;
@@ -72,7 +72,7 @@
   overflow: hidden;
 
   /* Slightly transparent + blurred (all devices, not just mobile) --
-   * matches the calendar menu's own panel (Menu.module.css's `.menu`). */
+   * matches `Menu`'s own panel (Menu.module.css's `.menu`). */
   background: color-mix(in srgb, var(--background), transparent 20%);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);

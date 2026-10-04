@@ -5,8 +5,8 @@ export interface FormatDateRangeOptions {
   /** `"long"` reads as a sentence ("4.–7. August 2026"); `"short"` fits a
    * dense list ("4.–7. Aug. 2026"). */
   month?: "short" | "long";
-  /** Drop the year -- for ranges inside the calendar's current scope, where
-   * it's already established and only adds noise. */
+  /** Drop the year -- for a range inside a period the surrounding UI has
+   * already established, where repeating it only adds noise. */
   year?: boolean;
 }
 
@@ -42,9 +42,8 @@ function compactDayPrefix(
  * numbers, so day/month order, punctuation and the month's name all come
  * from the locale.
  *
- * Extracted from the two places that had each grown their own version of
- * this (the day-off line in `DayDetailsModal`, the selection menu) so they
- * can't drift apart. */
+ * One implementation on purpose: this is the kind of formatting every
+ * call site otherwise grows its own slightly different version of. */
 export function formatDateRange(
   start: Temporal.PlainDate,
   end: Temporal.PlainDate | null | undefined,
