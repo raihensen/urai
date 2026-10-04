@@ -1,0 +1,43 @@
+/* ---------------------------------------------------------------------
+ * Base elements
+ *
+ * The handful of bare-element rules the components assume. Optional in the
+ * same way `reset.css` is -- but note that `input` here is what gives
+ * `TextInput`, `NumberInput` and the date inputs their box, since those
+ * components style only their *states* (`:invalid`, `:disabled`) and
+ * inherit the rest.
+ * ------------------------------------------------------------------- */
+
+html,
+body {
+  max-inline-size: 100vw;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+input {
+  padding: 0.5rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+
+  &:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}

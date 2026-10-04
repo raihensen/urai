@@ -1,0 +1,32 @@
+.label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  /* Reserves the same horizontal space a `Checkbox` field's checkbox
+   * takes up in its own combined "checkbox + label" row (see
+   * `Checkbox.module.css`'s `.checkboxSlot`), so every label's text lines
+   * up at the same indent regardless of whether its own field happens to
+   * be a checkbox. */
+  @media (max-width: 640px) {
+    padding-inline-start: 1.5rem;
+  }
+}
+
+.optionalCheck {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+.input {
+  &:invalid {
+    outline: 1px solid var(--error);
+  }
+
+  &:disabled {
+    color: var(--gray-alpha-700);
+    opacity: 0.8;
+    filter: grayscale(1);
+    cursor: not-allowed;
+  }
+}

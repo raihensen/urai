@@ -1,0 +1,12 @@
+.checkboxLabel {
+  /* Overrides `inputs.module.css`'s `.label` mobile indent -- the checkbox
+   * itself fills that space instead (see `.checkboxSlot`). */
+  padding-inline-start: 0;
+}
+
+.checkboxSlot {
+  inline-size: 1.5rem;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}

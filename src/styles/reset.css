@@ -1,0 +1,102 @@
+/* ---------------------------------------------------------------------
+ * Reset
+ *
+ * Replaces Tailwind's Preflight. Only the parts something actually relies
+ * on are kept -- each rule is here because a component breaks without it,
+ * not for completeness.
+ *
+ * Optional: an app with its own reset can skip this file and import
+ * `tokens.css` alone. The notes below say what each rule is load-bearing
+ * for, so you can check your own reset covers it.
+ * ------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* A border's initial width is `medium` and its initial style is `none`.
+   * Flipping that around means a rule can set a single side's *width* and
+   * get exactly that one border, rather than three stray 3px edges. */
+  border-width: 0;
+  border-style: solid;
+}
+
+html {
+  /* The unit the library's vertical rhythm is derived from. The browser
+   * default of `normal` (~1.2) quietly tightens every text block. */
+  line-height: 1.5;
+  /* Don't let mobile Safari inflate text on rotation. */
+  -webkit-text-size-adjust: 100%;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  line-height: inherit;
+}
+
+/* Headings are sized by whatever component renders them, never by the user
+ * agent's own scale. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* Form controls opt out of the inherited typography by default.
+ *
+ * `option` is in the list for the same reason as the rest, and its absence
+ * is visible: a `<select>` styled correctly still drops its list in the
+ * UA's default serif, because the options never inherited anything. Chrome
+ * on Windows draws the *open* list through the OS, so the popup itself may
+ * still ignore this -- the closed control does pick it up. */
+button,
+input,
+optgroup,
+option,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background-color: transparent;
+  cursor: pointer;
+}
+
+/* iOS refuses to style these unless they're told to render as buttons. */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+  appearance: button;
+}
+
+/* Replaced elements are inline by default, which reserves descender space
+ * underneath them -- a few stray pixels below every icon. `Button`'s
+ * icon-only square depends on this. */
+img,
+svg,
+video,
+canvas {
+  display: block;
+}
+
+img,
+video {
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+/* `Menu` and `Dropdown` both render real lists. */
+ul,
+ol {
+  list-style: none;
+}

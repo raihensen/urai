@@ -1,0 +1,130 @@
+/* ---------------------------------------------------------------------
+ * Design tokens
+ *
+ * The library's actual theming API. Every component in urai is styled
+ * exclusively in terms of the custom properties below, so an app themes
+ * the whole set by redefining them -- there is no ThemeProvider, no
+ * context and no JS involved. See the README's "Theming" section.
+ *
+ * Dark mode is selected by `data-theme="dark"` on the root element, which
+ * is what `next-themes` writes with `attribute="data-theme"`. The
+ * `prefers-color-scheme` block at the bottom covers the case where nothing
+ * is managing that attribute at all.
+ * ------------------------------------------------------------------- */
+
+:root {
+  --transition: all 0.3s;
+
+  --primary: #0fac54;
+  --secondary: purple;
+  --danger: #e0263f;
+  /* Distinct from `--danger` on purpose, even though they currently match:
+     `--danger` is a deliberate destructive *action* (a delete button),
+     `--error` is an invalid *state* (a field that won't validate). They
+     want to be able to diverge. */
+  --error: #e0263f;
+
+  --background: #ffffff;
+  --foreground: #171717;
+  /* The channels of `--foreground`, for the alpha ramp below. A separate
+     token because `rgba()` needs the components, not the colour -- and
+     because any app overriding `--foreground` must override this too. */
+  --foreground-rgb: 23, 23, 23;
+
+  --gray-100: #eaeaea;
+  --gray-200: #d6d6d6;
+  --gray-300: #c2c2c2;
+  --gray-400: #adadad;
+  --gray-500: #999999;
+  --gray-600: #858585;
+  --gray-700: #707070;
+  --gray-800: #5c5c5c;
+  --gray-900: #474747;
+
+  /* The same ramp as translucent ink rather than opaque grey -- for
+     anything that sits on top of content (a hover wash, a focused date
+     segment) and must not punch a hole in it. */
+  --gray-alpha-100: rgba(var(--foreground-rgb), 0.1);
+  --gray-alpha-200: rgba(var(--foreground-rgb), 0.2);
+  --gray-alpha-300: rgba(var(--foreground-rgb), 0.3);
+  --gray-alpha-400: rgba(var(--foreground-rgb), 0.4);
+  --gray-alpha-500: rgba(var(--foreground-rgb), 0.5);
+  --gray-alpha-600: rgba(var(--foreground-rgb), 0.6);
+  --gray-alpha-700: rgba(var(--foreground-rgb), 0.7);
+  --gray-alpha-800: rgba(var(--foreground-rgb), 0.8);
+  --gray-alpha-900: rgba(var(--foreground-rgb), 0.9);
+}
+
+/* The grey ramp inverts rather than darkening: `--gray-100` stays "the one
+   closest to the background" in both themes, so a component that reaches
+   for it never has to know which theme is active. */
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --foreground-rgb: 237, 237, 237;
+
+  --gray-100: #1d1d1d;
+  --gray-200: #2f2f2f;
+  --gray-300: #424242;
+  --gray-400: #555555;
+  --gray-500: #676767;
+  --gray-600: #7a7a7a;
+  --gray-700: #8d8d8d;
+  --gray-800: #9f9f9f;
+  --gray-900: #b2b2b2;
+
+  /* Restated, not inherited: these resolve `--foreground-rgb` at the point
+     they are *declared*, so without repeating them here they would keep
+     the light theme's channels and the whole alpha ramp would come out
+     inverted. */
+  --gray-alpha-100: rgba(var(--foreground-rgb), 0.1);
+  --gray-alpha-200: rgba(var(--foreground-rgb), 0.2);
+  --gray-alpha-300: rgba(var(--foreground-rgb), 0.3);
+  --gray-alpha-400: rgba(var(--foreground-rgb), 0.4);
+  --gray-alpha-500: rgba(var(--foreground-rgb), 0.5);
+  --gray-alpha-600: rgba(var(--foreground-rgb), 0.6);
+  --gray-alpha-700: rgba(var(--foreground-rgb), 0.7);
+  --gray-alpha-800: rgba(var(--foreground-rgb), 0.8);
+  --gray-alpha-900: rgba(var(--foreground-rgb), 0.9);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Only when nothing is managing `data-theme`.
+ *
+ * Guarded by `:not([data-theme])` so an explicit choice always wins: an app
+ * using `next-themes` (or any switch that writes the attribute) sets it on
+ * every render, including for "system", so this block is inert there. It is
+ * what makes the library look right in a plain page with no theme switch
+ * at all -- the samples app, for one. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --foreground-rgb: 237, 237, 237;
+
+    --gray-100: #1d1d1d;
+    --gray-200: #2f2f2f;
+    --gray-300: #424242;
+    --gray-400: #555555;
+    --gray-500: #676767;
+    --gray-600: #7a7a7a;
+    --gray-700: #8d8d8d;
+    --gray-800: #9f9f9f;
+    --gray-900: #b2b2b2;
+
+    --gray-alpha-100: rgba(var(--foreground-rgb), 0.1);
+    --gray-alpha-200: rgba(var(--foreground-rgb), 0.2);
+    --gray-alpha-300: rgba(var(--foreground-rgb), 0.3);
+    --gray-alpha-400: rgba(var(--foreground-rgb), 0.4);
+    --gray-alpha-500: rgba(var(--foreground-rgb), 0.5);
+    --gray-alpha-600: rgba(var(--foreground-rgb), 0.6);
+    --gray-alpha-700: rgba(var(--foreground-rgb), 0.7);
+    --gray-alpha-800: rgba(var(--foreground-rgb), 0.8);
+    --gray-alpha-900: rgba(var(--foreground-rgb), 0.9);
+  }
+}

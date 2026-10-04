@@ -1,0 +1,183 @@
+.modal {
+  --modal-margin: 1rem;
+  --modal-margin-block-end: 1rem;
+
+  /* Without this, the sizing below would apply even while the dialog has
+     no `open` attribute (i.e. hasn't had showModal()/show() called),
+     overriding the UA stylesheet's `dialog:not([open]) { display: none }`
+     and making a closed-but-mounted dialog render inline wherever it sits
+     in the DOM. */
+  &:not([open]) {
+    display: none;
+  }
+
+  /* Explicit rather than relying on the UA stylesheet's `dialog:modal`
+     defaults, since `display` above is already overridden: centers the
+     (by default auto-height) box within the viewport regardless of size.
+     Deliberately just positioning/sizing here, nothing visual (background/
+     border/blur/etc, see `.panel` below) and no `transform` other than the
+     mobile drag's own transient inline style (Modal.tsx) -- any of those,
+     applied directly to this element, would make it the containing block
+     for its own `position: fixed` descendants (per the CSS spec, same
+     category as `filter`/`perspective`), which would badly break
+     `react-select`'s viewport-relative fixed-position dropdown math (it's
+     portaled directly into this `<dialog>`, via `menuPortalTarget`, to
+     escape the dialog's *stacking* context/top-layer without rendering
+     behind it -- see e.g. `CategorySelect.tsx`). Padding/border reset to
+     0 since `.panel` (a plain, unfiltered div) now owns the actual visual
+     chrome and its own full-size layout. */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  padding: 0;
+  border: none;
+
+  inline-size: var(--modal-width, min(90vi, 600px));
+  block-size: var(--modal-height, auto);
+  max-inline-size: calc(100vw - 2 * var(--modal-margin));
+  max-block-size: calc(
+    100vh - var(--modal-margin) - var(--modal-margin-block-end)
+  );
+  /* Only actually animated during the mobile swipe-to-dismiss gesture's
+   * "spring back" (Modal.tsx sets `transition: none` inline while
+   * actively dragging, so the drag itself tracks the finger with zero
+   * lag, then clears that override on release). */
+  transition: transform 0.2s ease-out;
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  @media (max-width: 640px) {
+    --modal-margin: 2rem;
+    --modal-margin-block-end: 0;
+
+    inline-size: calc(100vw + 2px);
+    max-inline-size: calc(100vw + 2px);
+    margin-block-end: 0;
+  }
+}
+
+/* Owns all of the dialog's actual visual chrome (background/blur/border/
+ * shadow) and its flex layout -- split out from `.modal` (the `<dialog>`
+ * itself) specifically so `backdrop-filter` never lands on the element
+ * `react-select`'s menu gets portaled into, see the comment on `.modal`
+ * above. Fills the dialog completely, so visually indistinguishable from
+ * the old single-element version. */
+.panel {
+  inline-size: 100%;
+  block-size: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* Slightly transparent + blurred (all devices, not just mobile) --
+   * matches the calendar menu's own panel (Menu.module.css's `.menu`). */
+  background: color-mix(in srgb, var(--background), transparent 20%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--foreground);
+  border: 1px solid var(--gray-300);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 640px) {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+    border-block-end: none;
+  }
+}
+
+.header {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-300);
+
+  .title {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  /* Pushed up against the close button rather than spread by the header's
+   * `space-between`, so the title keeps the whole left side to itself and
+   * the actions read as part of the header's control cluster. */
+  .headerActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-inline-start: auto;
+    padding-inline-end: 0.75rem;
+  }
+
+  .closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--gray-600);
+    padding: 1rem;
+    margin: -1rem;
+    border-radius: 0.5rem;
+    line-height: 0;
+    transition: var(--transition);
+
+    &:hover {
+      color: var(--gray-800);
+    }
+  }
+
+  /* Hidden on desktop -- see `.handle` below for its mobile shape/role. */
+  .handle {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    /* The header itself is the swipe-to-dismiss drag surface (Modal.tsx)
+     * -- without this, the browser's own touch scroll/pan gesture would
+     * fight the drag tracking. */
+    touch-action: none;
+    padding-block-start: 1.25rem;
+
+    .title {
+      font-size: 1rem;
+    }
+
+    .closeButton {
+      display: none;
+    }
+
+    /* iOS-style drag handle -- purely decorative (the *whole* header is
+     * the drag surface, not just this), centered above the title. */
+    .handle {
+      display: block;
+      position: absolute;
+      inset-block-start: 0.4rem;
+      inset-inline: 0;
+      margin-inline: auto;
+      inline-size: 2.5rem;
+      block-size: 0.25rem;
+      border-radius: 999px;
+      background: var(--gray-300);
+    }
+  }
+}
+
+.content {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.footer {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--gray-300);
+}

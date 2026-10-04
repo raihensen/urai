@@ -1,0 +1,65 @@
+.badge {
+  /* The neutral default, overridden per-instance by the `color` prop. A
+     colour rather than a `--gray-*` token directly, so the three variants
+     below can each derive what they need from one value. */
+  --badge-color: var(--gray-400);
+  /* What reads *on* `--badge-color` when it is painted solid. Supplied by
+     `Badge.tsx`, which can measure a hex value's luminance; the fallback
+     covers the colours it can't. */
+  --badge-on-color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  padding-inline: 0.5rem;
+  padding-block: 0.125rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  user-select: none;
+  transition: var(--transition);
+}
+
+.solid {
+  background: var(--badge-color);
+  color: var(--badge-on-color);
+}
+
+/* A tint of the colour rather than the colour itself, mixed against the
+   page background so it lands correctly in both themes -- mixing with
+   `transparent` would instead leave it translucent over whatever happens to
+   be behind the badge, which in a modal is a blurred panel. */
+.soft {
+  background: color-mix(in srgb, var(--badge-color) 22%, var(--background));
+  border-color: color-mix(in srgb, var(--badge-color) 35%, var(--background));
+  color: var(--foreground);
+}
+
+.outline {
+  background: transparent;
+  border-color: var(--badge-color);
+  color: var(--foreground);
+}
+
+.small {
+  padding-inline: 0.375rem;
+  font-size: 0.7rem;
+}
+
+.interactive {
+  cursor: pointer;
+
+  &:hover {
+    /* Toward the text colour rather than a fixed darkening, so the hover is
+       visible in both themes. */
+    border-color: color-mix(in srgb, var(--badge-color), var(--foreground) 40%);
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  font-size: 0.9em;
+}

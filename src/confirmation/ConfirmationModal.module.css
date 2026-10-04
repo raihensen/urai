@@ -1,0 +1,23 @@
+/* Sits inside `Modal`'s own footer, which already provides the padding and
+ * the top rule -- this only arranges the buttons within it. */
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* A multiple-choice dialog's options are sentences, not verbs ("This and
+ * all following events"), so they stack instead of competing for width.
+ * Reversed so the cancel button -- always rendered last -- ends up at the
+ * top, where it reads as the way out rather than as a fourth answer. */
+.stacked {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+
+/* Flat rather than nested: CSS modules reject a bare `> *` inside a nested
+ * rule ("not pure"), since it can't see that the nesting already anchors
+ * it to a local class. */
+.stacked > * {
+  justify-content: center;
+}

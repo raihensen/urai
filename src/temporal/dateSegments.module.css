@@ -1,0 +1,70 @@
+/* Wraps a `DateSegmentGroup` together with whatever trigger the app puts
+   beside it (a calendar-icon button, say). Exported as `segmentField` from
+   the barrel's stylesheet so an app can reuse the row rather than
+   reinventing its spacing. */
+.picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  inline-size: 100%;
+}
+
+.segmentGroup {
+  display: inline-flex;
+  align-items: center;
+  /* Equal-width digits, so the field doesn't reflow as the value changes --
+     "11" and "22" must occupy the same box as "01". */
+  font-variant-numeric: tabular-nums;
+}
+
+.segment {
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  /* Not a text cursor: the segment is a spinbutton, not an editable text
+     run -- there is no caret to place. */
+  cursor: default;
+  outline: none;
+
+  &:focus {
+    background: var(--gray-alpha-200);
+    /* Inset, so the ring doesn't nudge the neighbouring segments. */
+    outline: 2px solid var(--primary);
+    outline-offset: -1px;
+  }
+}
+
+.placeholder {
+  color: var(--gray-alpha-500);
+}
+
+.separator {
+  padding-inline: 1px;
+  color: var(--gray-alpha-500);
+}
+
+.rangeSeparator {
+  padding-inline: 0.125rem;
+  color: var(--gray-alpha-500);
+}
+
+.triggerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: auto;
+  padding: 0.375rem 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--gray-alpha-200);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}

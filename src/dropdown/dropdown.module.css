@@ -1,0 +1,123 @@
+.anchor {
+  display: inline-block;
+  text-align: start;
+  /* What `.menu` positions against. The name is per-instance, supplied as
+   * `--dropdown-anchor` by `Dropdown.tsx`, because two dropdowns sharing
+   * one `anchor-name` would both resolve to whichever element matched
+   * last. `.menu` is a DOM child of this element, so it inherits the
+   * custom property even though the top layer paints it elsewhere. */
+  anchor-name: var(--dropdown-anchor);
+}
+
+.trigger {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.chevron {
+  color: var(--gray-600);
+  font-size: 0.75rem;
+  /* Pulls the caret back into the trigger's own padding: the glyph is
+   * drawn well inside its box, so without this it reads as noticeably
+   * more end-padding than the icon on the other side. A negative offset,
+   * so padding can't stand in for it. */
+  margin-inline-end: -0.25rem;
+}
+
+/* `Badge` already supplies the cursor and hover; this only has to undo
+   the nowrap, since a trigger carries a label plus a caret. */
+.badgeTrigger {
+  white-space: normal;
+}
+
+.menu {
+  /* Undo the UA's popover defaults: it centres itself in the viewport with
+   * `inset: 0; margin: auto` and draws a border and padding of its own. */
+  inset: auto;
+  margin: 0;
+  border: none;
+  overflow: visible;
+
+  position: fixed;
+  position-anchor: var(--dropdown-anchor);
+  /* Below the trigger, inline-end edges aligned -- `span-inline-start`
+   * means "occupy the centre and inline-start cells", so the menu hangs
+   * back from the trigger's end edge rather than overflowing past it. */
+  position-area: block-end span-inline-start;
+  /* The one fallback asked for: flip above the trigger when there isn't
+   * room below. `flip-block` mirrors the block-axis insets *and* margins,
+   * so the gap below becomes a gap above without a second rule. */
+  position-try-fallbacks: flip-block;
+  margin-block-start: 0.5rem;
+
+  inline-size: 14rem;
+  padding-block: 0.25rem;
+  border-radius: 0.375rem;
+  background: var(--background);
+  /* Drop shadow plus a hairline outline, as one shadow list -- a real
+   * border would take part in layout and shift the menu by a pixel. */
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1),
+    0 0 0 1px rgb(0 0 0 / 0.05);
+
+  /* No z-index anywhere: a popover is promoted to the top layer, which
+   * sits above every stacking context on the page by definition. */
+  transform-origin: top right;
+  opacity: 0;
+  transform: scale(0.95);
+  /* `display` and `overlay` are discrete properties, and a popover toggles
+   * both -- without `allow-discrete` they'd snap at the start of the
+   * close, cutting the fade off before it ran. */
+  transition:
+    opacity 0.2s ease-out,
+    transform 0.2s ease-out,
+    overlay 0.2s allow-discrete,
+    display 0.2s allow-discrete;
+
+  &:popover-open {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+/* The opening half of the transition: an element entering the top layer
+ * has no previous style to animate from, so its "before" state has to be
+ * declared separately. */
+@starting-style {
+  .menu:popover-open {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Browsers without anchor positioning get coordinates from JS instead (see
+ * the placement effect in `Dropdown.tsx`) -- a top-layer element's
+ * containing block is the viewport, so the `.anchor` wrapper can't place
+ * it and something has to. */
+@supports not (anchor-name: --a) {
+  .menu {
+    inset-block-start: var(--fallback-inset-block-start, 0);
+    inset-inline-start: var(--fallback-inset-inline-start, 0);
+    margin-block-start: 0;
+  }
+}
+
+.menu [role="menuitem"] {
+  display: block;
+  padding-block: 4px;
+  padding-inline: 2px;
+  font-size: small;
+  color: var(--gray-700);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--gray-100);
+    color: var(--gray-900);
+  }
+}

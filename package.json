@@ -1,0 +1,47 @@
+{
+  "name": "urai",
+  "version": "0.1.0",
+  "description": "Personal, reusable React components: buttons, badges, menus, modals, form inputs, and Temporal-based date rendering.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles/urai.css",
+    "./styles/*": "./src/styles/*"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "samples": "vite",
+    "dev": "vite",
+    "build:samples": "vite build",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx,css,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,css,json,md}\""
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0",
+    "react-icons": "^5.3.0",
+    "temporal-polyfill": "^0.3.2"
+  },
+  "dependencies": {
+    "classnames": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "prettier": "3.8.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.3.0",
+    "temporal-polyfill": "^0.3.2",
+    "typescript": "^5.8.2",
+    "vite": "^6.0.7"
+  }
+}

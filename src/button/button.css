@@ -1,0 +1,91 @@
+.button {
+  --btn-bg: var(--gray-100);
+
+  flex-shrink: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--btn-bg), var(--foreground) 20%);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  transition: var(--transition);
+  text-decoration: none !important;
+  user-select: none;
+
+  background: var(--btn-bg);
+
+  &.link {
+    --btn-bg: transparent;
+  }
+
+  &.alpha {
+    /* `var()`, not a bare `--gray-alpha-100`: the latter is a perfectly
+     * valid *custom property* value, but substituting it into `background`
+     * / `color-mix()` below makes those declarations invalid at computed-
+     * value time -- which silently dropped both the background *and* the
+     * border of every `alpha` button (all of the project card links). */
+    --btn-bg: var(--gray-alpha-100);
+  }
+
+  &.primary {
+    --btn-bg: var(--primary);
+    color: white;
+  }
+
+  &.secondary {
+    --btn-bg: var(--secondary);
+    color: white;
+  }
+
+  &.danger {
+    --btn-bg: var(--danger);
+    color: white;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+    pointer-events: none;
+    filter: grayscale(50%);
+  }
+
+  &.large {
+    padding: 1rem;
+  }
+
+  /* `shape="rounded"` is the default and is the `border-radius` above --
+   * these two are the departures from it. */
+  &.circle {
+    /* A single large radius rather than 50%: on an icon-only button (which
+     * `.icon-only` below has already made square) this renders a true
+     * circle, while on a button with a label it becomes a proper pill
+     * rather than the oval a percentage radius would give. */
+    border-radius: 999px;
+  }
+
+  &.sharp {
+    border-radius: 0;
+  }
+
+  /* A button holding nothing but an icon is square, whatever its shape or
+   * size: the icon carries no width of its own to balance the padding
+   * against, so without this the box is as wide as the icon's advance and
+   * as tall as its line box, which are rarely equal. Set on the *border*
+   * box (`box-sizing` is global), so padding and border are inside the
+   * square and the icon stays centred in it at every `font-size`. */
+  &.icon-only {
+    aspect-ratio: 1;
+    justify-content: center;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--btn-bg), var(--foreground) 30%);
+    border-color: color-mix(in srgb, var(--btn-bg), var(--foreground) 50%);
+  }
+
+  svg,
+  .icon {
+    flex-shrink: 0;
+  }
+}

@@ -1,0 +1,42 @@
+/* ---------------------------------------------------------------------
+ * Layout
+ *
+ * One global utility, kept because every page wants it and because its
+ * first breakpoint is the same 640px as `MOBILE_QUERY` in
+ * `utils/breakpoints.ts`. Changing one means changing the other.
+ * ------------------------------------------------------------------- */
+
+.container {
+  inline-size: 100%;
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-inline-size: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-inline-size: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-inline-size: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-inline-size: 1280px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-inline-size: 1536px;
+  }
+}
