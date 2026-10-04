@@ -183,29 +183,44 @@ urai ships TypeScript source and CSS modules; the consumer compiles them.
 There is no `dist`, so nothing can be stale and CSS modules keep working
 normally.
 
-In a Next.js app, from a sibling checkout:
+Install it straight from GitHub:
 
 ```jsonc
 // package.json
 "dependencies": {
-  "urai": "link:../../urai"   // path is relative to the *consumer*
+  "urai": "github:raihensen/urai#main"
 }
 ```
+
+The branch is the _channel_, not the pin — the consumer's `yarn.lock`
+records the exact commit, so installs stay reproducible until someone runs
+`yarn upgrade urai`. Tag releases and depend on `#v0.1.0` instead once the
+API is worth freezing.
+
+Then, in a Next.js app:
 
 ```ts
 // next.config.ts
 transpilePackages: ["urai"],
 ```
 
-Then import `urai/styles.css` once, at the root.
+...and import `urai/styles.css` once, at the root. That is the whole setup:
+because yarn installs the package without its devDependencies, the peer
+dependencies resolve from the consuming app's own tree like any other
+package, and nothing needs aliasing in either the bundler or TypeScript.
 
-Because the link is a symlink into a checkout that has its own
-`node_modules`, the peer dependencies need pinning to the app's copies in
-**two** places — bundler and TypeScript. The consuming repo's
-`next.config.ts` and `tsconfig.json` each carry a comment explaining it; in
-short:
+### If you link a local checkout instead
 
-- `resolve.alias` for `temporal-polyfill` and `react-icons`. **Not** for
+`"urai": "link:../../urai"` is useful while changing library and app
+together — the symlink is live, so there is no reinstall step. It costs
+something, though: the symlink points into a checkout that has its own
+`node_modules`, where every peer is installed as a devDependency. Both the
+bundler and TypeScript then find _those_ copies, and a linked setup needs
+them pinned back to the app's:
+
+- `resolve.alias` for `temporal-polyfill` and `react-icons`.
+  `temporal-polyfill` is the one that matters: `instanceof
+Temporal.PlainDate` returns `false` across two copies. **Not**
   `react`/`react-dom` — Next aliases those to its own precompiled builds to
   select the `react-server` build for server components, and overriding
   that breaks the RSC build outright (`React.cache is not a function`).
@@ -213,8 +228,28 @@ short:
   `@types/react` give two nominally distinct `ReactNode`s, and then every
   component boundary between app and library fails to typecheck.
 
-Published to a registry instead, both problems disappear — the peers would
-resolve from the consumer's own tree like any other package.
+Both go away again on switching back to the git dependency.
+
+### A note on private repos
+
+While this repository is private, anything installing it needs git
+credentials for it — a local machine with a GitHub login has them, CI and
+Vercel do not. Yarn also rewrites the `github:` shorthand to
+`git+ssh://git@github.com/...` in `yarn.lock`, so a build host needs an SSH
+deploy key rather than a token.
+
+Making the repository public removes that entirely, which for an
+MIT-licensed component library is the obvious answer. Otherwise the host
+needs a deploy key, or the dependency has to come from a registry
+(npm, or GitHub Packages).
+
+### Shipping notes
+
+`files: ["src"]` applies to registry publishes, not to git dependencies:
+yarn _clones_ for those, so a consumer gets the whole repository minus what
+`.gitignore` excludes — `samples/` and the configs included. Harmless (no
+`node_modules`, and nothing imports the samples), but worth knowing before
+adding anything large or secret to the repo.
 
 ## Checks
 
