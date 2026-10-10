@@ -123,6 +123,24 @@ export function useTooltip(
       else if (tip.top >= box.bottom - 1) setSide("block-end");
       else if (tip.right <= box.left + 1) setSide("inline-start");
       else setSide("inline-end");
+
+      // Where the arrow sits along the bubble's edge: opposite the target's
+      // centre, not the bubble's. The two differ whenever the bubble had to
+      // slide to stay on screen, or is wider than the space beside a target
+      // near the edge. Clamped so the arrow never leaves the straight part
+      // of the edge for a rounded corner. Both axes are written, and the
+      // stylesheet uses whichever the landed side needs.
+      const inset = 12;
+      const clamp = (value: number, max: number) =>
+        Math.min(Math.max(value, inset), max - inset);
+      element.style.setProperty(
+        "--tooltip-arrow-x",
+        `${clamp(box.left + box.width / 2 - tip.left, tip.width)}px`,
+      );
+      element.style.setProperty(
+        "--tooltip-arrow-y",
+        `${clamp(box.top + box.height / 2 - tip.top, tip.height)}px`,
+      );
     };
     measureSide();
 

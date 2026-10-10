@@ -79,8 +79,11 @@
  * the bubble's edge. A rotated square rather than a `border` triangle so it
  * inherits the bubble's own colour and corner rounding in one go.
  *
- * Centred on the bubble, which is also centred on the target -- both
- * `position-area` placements below centre along the cross axis. */
+ * Positioned at `--tooltip-arrow-x`/`-y`, which `useTooltip` measures as
+ * the target's centre relative to the bubble -- so it points at the target
+ * even when the bubble slid along to stay on screen. Physical `left`/`top`
+ * because the measurement is in viewport pixels. The 50% fallback is the
+ * first frame, before anything has been measured. */
 .tooltip::after {
   content: "";
   position: absolute;
@@ -97,25 +100,25 @@
  * away from the thing it describes. */
 .tooltip[data-side="block-end"]::after {
   inset-block-start: 0;
-  inset-inline-start: 50%;
+  left: var(--tooltip-arrow-x, 50%);
   translate: -50% -50%;
 }
 
 .tooltip[data-side="block-start"]::after {
   inset-block-end: 0;
-  inset-inline-start: 50%;
+  left: var(--tooltip-arrow-x, 50%);
   translate: -50% 50%;
 }
 
 .tooltip[data-side="inline-end"]::after {
   inset-inline-start: 0;
-  inset-block-start: 50%;
+  top: var(--tooltip-arrow-y, 50%);
   translate: -50% -50%;
 }
 
 .tooltip[data-side="inline-start"]::after {
   inset-inline-end: 0;
-  inset-block-start: 50%;
+  top: var(--tooltip-arrow-y, 50%);
   translate: 50% -50%;
 }
 
