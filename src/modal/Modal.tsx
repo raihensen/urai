@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { MOBILE_QUERY } from "../utils/breakpoints";
 import React from "react";
@@ -24,7 +25,18 @@ export interface ModalProps extends React.PropsWithChildren {
   footer?: React.ReactNode;
   /** CSS length (e.g. `"700px"`, `"80vh"`). Always clamped to the viewport minus padding. */
   width?: string;
+  /** Fixed height, for a dialog that should take the space it is given and
+   * scroll its content inside -- rather than the default, which fits the
+   * content (up to the viewport, then scrolls). */
   height?: string;
+  /** Whether the dialog offers its own ways out: the close button, a click
+   * on the backdrop and, on mobile, the bottom-sheet layout with its
+   * swipe-down-to-dismiss handle. Default `true`.
+   *
+   * `false` is for a dialog that has to be answered through its footer --
+   * a confirmation. It stays a small centred card on mobile too. Escape
+   * still calls `close`, as the keyboard's cancel. */
+  closable?: boolean;
   /** Controls that belong to the dialog as a whole rather than to any one
    * field, rendered in the header between the title and the close button.
    * Keeps them out of the form's row rhythm entirely -- see the event
@@ -53,6 +65,7 @@ export const Modal = ({
   height,
   headerActions,
   onHorizontalSwipe,
+  closable = true,
   ...props
 }: ModalProps) => {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
@@ -119,6 +132,9 @@ export const Modal = ({
   // same gesture and page the content behind the modal.
   React.useEffect(() => {
     if (!isMobile) return undefined;
+    // Nothing to do without either gesture: no dismiss swipe on a dialog
+    // that isn't closable, and no horizontal one without a handler.
+    if (!closable && !onHorizontalSwipe) return undefined;
     const header = headerRef.current;
     const dialog = dialogRef.current;
     if (!header || !dialog) return undefined;
@@ -150,7 +166,7 @@ export const Modal = ({
       if (axis === null) {
         if (Math.hypot(deltaX, deltaY) < AXIS_LOCK_PX) return;
         const isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
-        if (!isHorizontal && !startedInHeader) {
+        if (!isHorizontal && (!startedInHeader || !closable)) {
           // A plain scroll, starting outside the header -- not our
           // gesture at all, leave it to the browser.
           start = null;
@@ -220,14 +236,14 @@ export const Modal = ({
         capture: true,
       });
     };
-  }, [isMobile, close, onHorizontalSwipe]);
+  }, [isMobile, close, onHorizontalSwipe, closable]);
 
   if (!mounted) return null;
 
   return createPortal(
     <dialog
       ref={dialogRef}
-      className={styles.modal}
+      className={classNames(styles.modal, !closable && styles.centered)}
       style={
         {
           zIndex,
@@ -242,19 +258,21 @@ export const Modal = ({
       // actual content inside instead targets that descendant, leaving
       // `currentTarget` (the dialog) and `target` unequal.
       onClick={event => {
-        if (event.target === event.currentTarget) close();
+        if (closable && event.target === event.currentTarget) close();
       }}
     >
       <div className={styles.panel}>
         <div ref={headerRef} className={styles.header}>
-          <div className={styles.handle} />
+          {closable && <div className={styles.handle} />}
           <h2 className={styles.title}>{title}</h2>
           {!!headerActions && (
             <div className={styles.headerActions}>{headerActions}</div>
           )}
-          <button className={styles.closeButton} onClick={close}>
-            &times;
-          </button>
+          {closable && (
+            <button className={styles.closeButton} onClick={close}>
+              &times;
+            </button>
+          )}
         </div>
         <div className={styles.content}>{props.children}</div>
         {props.footer && <div className={styles.footer}>{props.footer}</div>}

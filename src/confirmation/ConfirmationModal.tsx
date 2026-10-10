@@ -34,6 +34,10 @@ export const ConfirmationModal = (props: ConfirmationModalProps) => {
     <Modal
       isOpen={props.isOpen}
       close={props.onCancel}
+      // Answered through the footer: no close button or swipe, and a small
+      // centred card on mobile rather than a bottom sheet.
+      closable={false}
+      width="26rem"
       title={props.title ?? "Are you sure?"}
       footer={
         <div className={classNames(styles.footer, !!choices && styles.stacked)}>
