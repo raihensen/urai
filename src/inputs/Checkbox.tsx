@@ -15,7 +15,7 @@ export type CheckboxProps = Omit<
 
 export const Checkbox = (props: CheckboxProps) => {
   const id = React.useId();
-  const { label, checked, onChange, disabled } = props;
+  const { label, checked, onChange, disabled, fullRow } = props;
   const isMobile = useMediaQuery(MOBILE_QUERY);
 
   const input = (
@@ -28,7 +28,7 @@ export const Checkbox = (props: CheckboxProps) => {
     />
   );
 
-  // On mobile an app's form grid typically collapses to one column, so
+  // On mobile `Form`'s grid collapses to one column, so
   // every other field's label sits above its control -- but stacking a
   // checkbox below its own one-word label would waste a row for no reason.
   // It stays a single "checkbox + label" row instead, matching the indent
@@ -38,6 +38,7 @@ export const Checkbox = (props: CheckboxProps) => {
       <label
         htmlFor={id}
         className={classNames(inputStyles.label, checkboxStyles.checkboxLabel)}
+        data-urai-full-row={fullRow || undefined}
       >
         <span className={checkboxStyles.checkboxSlot}>{input}</span>
         {label}
@@ -47,7 +48,11 @@ export const Checkbox = (props: CheckboxProps) => {
 
   return (
     <>
-      <label htmlFor={id} className={inputStyles.label}>
+      <label
+        htmlFor={id}
+        className={inputStyles.label}
+        data-urai-full-row={fullRow || undefined}
+      >
         {label}
       </label>
       {input}

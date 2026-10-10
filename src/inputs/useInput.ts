@@ -15,6 +15,9 @@ export interface InputProps<T, Req extends boolean = false> {
    *
    * Kann auch als Funktion angegeben werden, um die Berechnung des Default-Werts zu verzögern, bis er tatsächlich benötigt wird. */
   defaultValue?: Req extends true ? DefaultValue<T> : DefaultValue<T | null>;
+  /** Inside a two-column `Form`: start a row of its own and fill it, rather
+   * than taking the next half-row slot. */
+  fullRow?: boolean;
 }
 
 export type InputValue<T, Req extends boolean> = Req extends true

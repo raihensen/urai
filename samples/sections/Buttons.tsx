@@ -45,7 +45,7 @@ export const Buttons = () => (
       </Button>
     </Row>
     <Row label="as a link">
-      <Button href="https://github.com/rhensen" target="_blank" alpha>
+      <Button href="https://github.com/raihensen" target="_blank" alpha>
         Opens a URL
       </Button>
     </Row>

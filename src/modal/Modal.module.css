@@ -11,6 +11,15 @@
     display: none;
   }
 
+  /* A flex column so `.panel` can fill the dialog as a flex item. Not
+   * `block-size: 100%` on the panel: against this `fit-content` height
+   * that percentage is circular, and WebKit resolved it to 0 -- every
+   * dialog was a bare border on iOS. */
+  &[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
   /* Explicit rather than relying on the UA stylesheet's `dialog:modal`
      defaults, since `display` above is already overridden: centers the
      (by default auto-height) box within the viewport regardless of size.
@@ -33,7 +42,13 @@
   border: none;
 
   inline-size: var(--modal-width, min(90vi, 600px));
-  block-size: var(--modal-height, auto);
+  /* `fit-content`, not `auto`: with all four insets at 0, `auto` means
+   * "stretch between them", which made every dialog nearly the viewport's
+   * height whatever it held. A dialog that wants that passes `height`. */
+  /* `height` is set inline instead, from `Modal.tsx`. Prefixed first for
+   * older WebKit, which only knows `-webkit-fit-content`. */
+  block-size: -webkit-fit-content;
+  block-size: fit-content;
   max-inline-size: calc(100vw - 2 * var(--modal-margin));
   max-block-size: calc(
     100vh - var(--modal-margin) - var(--modal-margin-block-end)
@@ -50,7 +65,10 @@
 
   @media (max-width: 640px) {
     --modal-margin: 2rem;
-    --modal-margin-block-end: 0;
+    /* `0px`, not `0`: it ends up in the `calc()` of `max-block-size`, where
+     * a unitless zero next to lengths is invalid -- which silently dropped
+     * the cap, letting a tall bottom sheet run past the screen. */
+    --modal-margin-block-end: 0px;
 
     inline-size: calc(100vw + 2px);
     max-inline-size: calc(100vw + 2px);
@@ -58,15 +76,41 @@
   }
 }
 
+/* A dialog that isn't `closable` is answered through its footer, so it
+ * skips the bottom sheet on mobile: a centred card as on desktop, with a
+ * margin all round. */
+.modal.centered {
+  @media (max-width: 640px) {
+    --modal-margin: 1rem;
+    --modal-margin-block-end: 1rem;
+
+    inline-size: var(--modal-width, min(90vi, 600px));
+    max-inline-size: calc(100vw - 2 * var(--modal-margin));
+    margin-block-end: auto;
+  }
+}
+
+/* The page behind an open dialog doesn't scroll, and so shows no
+ * scrollbar of its own -- otherwise a scroll that reaches the end of the
+ * dialog's content carries on into the page. Keyed off the dialog being
+ * open rather than set from JS, so stacked dialogs need no counting and
+ * nothing can leave the page locked. */
+:global(html):has(.modal[open]) {
+  overflow: hidden;
+}
+
 /* Owns all of the dialog's actual visual chrome (background/blur/border/
  * shadow) and its flex layout -- split out from `.modal` (the `<dialog>`
  * itself) specifically so `backdrop-filter` never lands on the element
  * `react-select`'s menu gets portaled into, see the comment on `.modal`
  * above. Fills the dialog completely, so visually indistinguishable from
- * the old single-element version. */
+ * the old single-element version -- as a flex item, see `&[open]` above.
+ * Allowed to shrink below its content, so a dialog capped at the viewport
+ * scrolls `.content` instead of overflowing. */
 .panel {
   inline-size: 100%;
-  block-size: 100%;
+  flex: 1 1 auto;
+  min-block-size: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -85,6 +129,18 @@
     border-end-start-radius: 0;
     border-end-end-radius: 0;
     border-block-end: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .centered .panel {
+    border-radius: 0.5rem;
+    border-block-end: 1px solid var(--gray-300);
+  }
+
+  /* Only the swipe-to-dismiss drag needs the header to swallow touch. */
+  .centered .header {
+    touch-action: auto;
   }
 }
 

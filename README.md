@@ -27,28 +27,36 @@ import "urai/styles.css";
 
 ### Overlays
 
-| Export              | What it is                                                                                                                                                                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Modal`             | Native `<dialog>`, portaled to `<body>` so nested dialogs stack as siblings. On mobile it becomes a bottom sheet: swipe the header down to dismiss, or pass `onHorizontalSwipe` for a sideways gesture. Slots: `title`, `headerActions`, children, `footer`. |
-| `ConfirmProvider`   | Mount once at the app root.                                                                                                                                                                                                                                  |
-| `useConfirm`        | `await confirm({ title, description })` → `boolean`.                                                                                                                                                                                                         |
-| `useChoose`         | The same dialog with more than two answers → the chosen `value`, or `null`.                                                                                                                                                                                  |
-| `ConfirmationModal` | The dialog itself, if you want to drive it directly.                                                                                                                                                                                                         |
+| Export              | What it is                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Modal`             | Native `<dialog>`, portaled to `<body>` so nested dialogs stack as siblings. On mobile it becomes a bottom sheet: swipe the header down to dismiss, or pass `onHorizontalSwipe` for a sideways gesture. Fits its content unless given a `height`, and locks page scroll while open. `closable={false}` drops the close button, backdrop click and swipe, and stays a centred card on mobile. Slots: `title`, `headerActions`, children, `footer`. |
+| `ConfirmProvider`   | Mount once at the app root.                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `useConfirm`        | `await confirm({ title, description })` → `boolean`.                                                                                                                                                                                                                                                                                                                                                                                              |
+| `useChoose`         | The same dialog with more than two answers → the chosen `value`, or `null`.                                                                                                                                                                                                                                                                                                                                                                       |
+| `ConfirmationModal` | The dialog itself, if you want to drive it directly. Not `closable`: answered through its buttons.                                                                                                                                                                                                                                                                                                                                                |
 
 ### Form inputs
 
-`TextInput`, `NumberInput`, `Checkbox`, `InputLabel`, `useInput`.
+`Form`, `TextInput`, `NumberInput`, `Checkbox`, `InputLabel`, `useInput`.
 
-Each renders **a label and a control as two siblings, with no wrapper
-between them**, so the app's own form grid lines every field up. That is the
-one thing to know before using them:
+Each input renders **a label and a control as two siblings, with no wrapper
+between them**, and `Form` is the grid that lines them up: one label/field
+pair per row, label above field on mobile.
 
-```css
-.form {
-  display: grid;
-  grid-template-columns: 10rem 1fr;
-}
+```tsx
+<Form columns={2}>
+  <TextInput label="Title" value={title} onChange={setTitle} fullRow />
+  <TextInput label="Room" value={room} onChange={setRoom} />
+  <NumberInput label="Seats" value={seats} onChange={setSeats} />
+</Form>
 ```
+
+With `columns={2}`, once the form itself is wide enough (a container
+query, not the viewport) two fields share each row, filled in source order.
+`fullRow` on an input starts a fresh row and spans it. There is nothing to
+register: the label carries a `data-urai-full-row` attribute and grid
+auto-placement does the rest, so a custom input built on `InputLabel` only
+has to pass `fullRow` through.
 
 Values are `T | null`, not `""` — a cleared optional field is absent, not
 blank. Give a field a `defaultValue` and its label grows a checkbox that

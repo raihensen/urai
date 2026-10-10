@@ -123,17 +123,48 @@ export function useTooltip(
       else if (tip.top >= box.bottom - 1) setSide("block-end");
       else if (tip.right <= box.left + 1) setSide("inline-start");
       else setSide("inline-end");
+
+      // Where the arrow sits along the bubble's edge: opposite the target's
+      // centre, not the bubble's. The two differ whenever the bubble had to
+      // slide to stay on screen, or is wider than the space beside a target
+      // near the edge. Clamped so the arrow never leaves the straight part
+      // of the edge for a rounded corner. Both axes are written, and the
+      // stylesheet uses whichever the landed side needs.
+      const inset = 12;
+      const clamp = (value: number, max: number) =>
+        Math.min(Math.max(value, inset), max - inset);
+      element.style.setProperty(
+        "--tooltip-arrow-x",
+        `${clamp(box.left + box.width / 2 - tip.left, tip.width)}px`,
+      );
+      element.style.setProperty(
+        "--tooltip-arrow-y",
+        `${clamp(box.top + box.height / 2 - tip.top, tip.height)}px`,
+      );
     };
     measureSide();
 
+    // Capture, so a handler further down that stops propagation (a modal's
+    // own Escape handling, say) can't keep the tooltip open.
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
-    document.addEventListener("keydown", handleKeyDown);
+    // A press anywhere but the target closes it. Mostly for touch, where
+    // nothing else would: there is no pointer to leave the target, and a
+    // tooltip revealed by a long press otherwise stays up until the next
+    // press on that same target.
+    const handlePointerDown = (event: PointerEvent) => {
+      const anchor = popoverRef.current?.parentElement;
+      if (anchor?.contains(event.target as Node)) return;
+      setOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown, true);
+    document.addEventListener("pointerdown", handlePointerDown, true);
     window.addEventListener("resize", measureSide);
     window.addEventListener("scroll", measureSide, true);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown, true);
+      document.removeEventListener("pointerdown", handlePointerDown, true);
       window.removeEventListener("resize", measureSide);
       window.removeEventListener("scroll", measureSide, true);
     };
@@ -159,6 +190,16 @@ export function useTooltip(
     style: {
       anchorName,
       "--tooltip-anchor": anchorName,
+      // Holding a finger down already means something else to the browser,
+      // and each of those would fire alongside the tooltip: selecting the
+      // text under it (with its magnifier and handles), and iOS's callout
+      // or link preview for a target that is a link -- which `Button` is.
+      // Android's context menu is the third, cancelled in `onContextMenu`.
+      ...(touch === "long-press" && {
+        WebkitUserSelect: "none",
+        userSelect: "none",
+        WebkitTouchCallout: "none",
+      }),
     } as React.CSSProperties,
     // Hover and focus are the mouse/keyboard paths, and are all a pointing
     // device ever needs.
@@ -184,6 +225,13 @@ export function useTooltip(
       }, LONG_PRESS_MS);
     },
     onPointerUp: clearLongPress,
+    // Android opens the context menu on the same hold that reveals the
+    // tooltip. Only cancelled for touch: a right click keeps its menu.
+    onContextMenu: (event: React.MouseEvent) => {
+      if (touch !== "long-press") return;
+      if ((event.nativeEvent as PointerEvent).pointerType === "mouse") return;
+      event.preventDefault();
+    },
     onPointerCancel: () => {
       clearLongPress();
       setOpen(false);

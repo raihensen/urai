@@ -39,6 +39,7 @@ export const PlainDateTimeInput = <R extends boolean = false>(
         defaultValue={defaultValue}
         required={required}
         disabled={disabled}
+        fullRow={props.fullRow}
       />
       <input
         type="datetime-local"
