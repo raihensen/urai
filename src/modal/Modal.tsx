@@ -248,7 +248,9 @@ export const Modal = ({
         {
           zIndex,
           ...(width && { "--modal-width": width }),
-          ...(height && { "--modal-height": height }),
+          // Inline rather than through a custom property, so the stylesheet's
+          // default can be a plain declaration with a prefixed fallback.
+          ...(height && { blockSize: height }),
         } as React.CSSProperties
       }
       onCancel={close}

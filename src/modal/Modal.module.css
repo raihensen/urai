@@ -11,6 +11,15 @@
     display: none;
   }
 
+  /* A flex column so `.panel` can fill the dialog as a flex item. Not
+   * `block-size: 100%` on the panel: against this `fit-content` height
+   * that percentage is circular, and WebKit resolved it to 0 -- every
+   * dialog was a bare border on iOS. */
+  &[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
   /* Explicit rather than relying on the UA stylesheet's `dialog:modal`
      defaults, since `display` above is already overridden: centers the
      (by default auto-height) box within the viewport regardless of size.
@@ -36,7 +45,10 @@
   /* `fit-content`, not `auto`: with all four insets at 0, `auto` means
    * "stretch between them", which made every dialog nearly the viewport's
    * height whatever it held. A dialog that wants that passes `height`. */
-  block-size: var(--modal-height, fit-content);
+  /* `height` is set inline instead, from `Modal.tsx`. Prefixed first for
+   * older WebKit, which only knows `-webkit-fit-content`. */
+  block-size: -webkit-fit-content;
+  block-size: fit-content;
   max-inline-size: calc(100vw - 2 * var(--modal-margin));
   max-block-size: calc(
     100vh - var(--modal-margin) - var(--modal-margin-block-end)
@@ -53,7 +65,10 @@
 
   @media (max-width: 640px) {
     --modal-margin: 2rem;
-    --modal-margin-block-end: 0;
+    /* `0px`, not `0`: it ends up in the `calc()` of `max-block-size`, where
+     * a unitless zero next to lengths is invalid -- which silently dropped
+     * the cap, letting a tall bottom sheet run past the screen. */
+    --modal-margin-block-end: 0px;
 
     inline-size: calc(100vw + 2px);
     max-inline-size: calc(100vw + 2px);
@@ -89,10 +104,13 @@
  * itself) specifically so `backdrop-filter` never lands on the element
  * `react-select`'s menu gets portaled into, see the comment on `.modal`
  * above. Fills the dialog completely, so visually indistinguishable from
- * the old single-element version. */
+ * the old single-element version -- as a flex item, see `&[open]` above.
+ * Allowed to shrink below its content, so a dialog capped at the viewport
+ * scrolls `.content` instead of overflowing. */
 .panel {
   inline-size: 100%;
-  block-size: 100%;
+  flex: 1 1 auto;
+  min-block-size: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
