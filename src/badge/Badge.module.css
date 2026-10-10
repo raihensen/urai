@@ -62,4 +62,12 @@
 .icon {
   flex-shrink: 0;
   font-size: 0.9em;
+  /* An explicit square, a block and no clipping: react-icons' glyphs run
+   * to the very edge of their viewBox, and Safari cut the bottom off a
+   * circular icon once its fractional size (0.9em of 0.8rem) was rounded
+   * against the badge's line box. */
+  display: block;
+  inline-size: 1em;
+  block-size: 1em;
+  overflow: visible;
 }
