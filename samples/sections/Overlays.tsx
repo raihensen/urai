@@ -75,15 +75,15 @@ export const Dropdowns = () => (
         buttonLabel="Repositories"
         buttonProps={{ alpha: true }}
       >
-        {["urai", "portfolio", "dotfiles"].map(repo => (
+        {["urai", "portfolio", "myhass"].map(repo => (
           <a
             key={repo}
             role="menuitem"
             tabIndex={-1}
-            href={`https://github.com/rhensen/${repo}`}
+            href={`https://github.com/raihensen/${repo}`}
             target="_blank"
           >
-            rhensen/{repo}
+            raihensen/{repo}
           </a>
         ))}
       </Dropdown>

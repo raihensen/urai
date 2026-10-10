@@ -11,7 +11,12 @@
   padding: 0.5rem;
   transition: var(--transition);
   text-decoration: none !important;
+  /* Prefixed too: Safari still ignores the bare property, so a long press
+   * on a button selected its label. The callout is iOS's menu or link
+   * preview for a held link, which a button with an `href` is. */
+  -webkit-user-select: none;
   user-select: none;
+  -webkit-touch-callout: none;
 
   background: var(--btn-bg);
 
