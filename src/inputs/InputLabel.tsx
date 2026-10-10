@@ -14,7 +14,8 @@ interface InputLabelProps<T, R extends boolean = false> extends Omit<
 export const InputLabel = <T, R extends boolean = false>(
   props: InputLabelProps<T, R>,
 ) => {
-  const { hasValue, onChange, defaultValue, required, disabled } = props;
+  const { hasValue, onChange, defaultValue, required, disabled, fullRow } =
+    props;
 
   /** Show optional checkbox if not required and default value is set (s.t. default can be applied when checking) */
   const hasOptionalCheck = !required && defaultValue !== undefined;
@@ -22,7 +23,13 @@ export const InputLabel = <T, R extends boolean = false>(
   // TODO: Back to previous non-null value when re-enabling and defaultValue is not set?
 
   return (
-    <label htmlFor={props.id} className={styles.label}>
+    <label
+      htmlFor={props.id}
+      className={styles.label}
+      // Read by `Form.module.css`, which has to find a full-row field's label
+      // and the control right after it from outside this CSS module.
+      data-urai-full-row={fullRow || undefined}
+    >
       {props.label}
       {hasOptionalCheck && (
         <input

@@ -37,18 +37,26 @@ import "urai/styles.css";
 
 ### Form inputs
 
-`TextInput`, `NumberInput`, `Checkbox`, `InputLabel`, `useInput`.
+`Form`, `TextInput`, `NumberInput`, `Checkbox`, `InputLabel`, `useInput`.
 
-Each renders **a label and a control as two siblings, with no wrapper
-between them**, so the app's own form grid lines every field up. That is the
-one thing to know before using them:
+Each input renders **a label and a control as two siblings, with no wrapper
+between them**, and `Form` is the grid that lines them up: one label/field
+pair per row, label above field on mobile.
 
-```css
-.form {
-  display: grid;
-  grid-template-columns: 10rem 1fr;
-}
+```tsx
+<Form columns={2}>
+  <TextInput label="Title" value={title} onChange={setTitle} fullRow />
+  <TextInput label="Room" value={room} onChange={setRoom} />
+  <NumberInput label="Seats" value={seats} onChange={setSeats} />
+</Form>
 ```
+
+With `columns={2}`, once the form itself is wide enough (a container
+query, not the viewport) two fields share each row, filled in source order.
+`fullRow` on an input starts a fresh row and spans it. There is nothing to
+register: the label carries a `data-urai-full-row` attribute and grid
+auto-placement does the rest, so a custom input built on `InputLabel` only
+has to pass `fullRow` through.
 
 Values are `T | null`, not `""` — a cleared optional field is absent, not
 blank. Give a field a `defaultValue` and its label grows a checkbox that

@@ -45,6 +45,7 @@ export const NumberInput = <R extends boolean = false>(
         defaultValue={defaultValue}
         required={required}
         disabled={disabled}
+        fullRow={props.fullRow}
       />
       <input
         type="number"

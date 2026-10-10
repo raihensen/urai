@@ -1,0 +1,65 @@
+/* The query container for `.twoColumns` below. A separate element because a
+ * container query styles descendants of the container, never the container
+ * itself. Sized by the form's own width rather than the viewport, so the
+ * same form gets two columns in a wide modal and one in a narrow one. */
+.container {
+  container-type: inline-size;
+}
+
+/* Each input renders a label and a control as two siblings with no wrapper
+ * (see `inputs/`), so a field is two consecutive grid items, and grid
+ * auto-placement puts every label in a label track and every control in the
+ * field track next to it. */
+.form {
+  --urai-form-label-width: clamp(100px, 40%, 300px);
+
+  display: grid;
+  grid-template-columns: var(--urai-form-label-width) 1fr;
+  row-gap: 1rem;
+  column-gap: 0.5rem;
+}
+
+/* Two label/field pairs per row. Half-row fields need nothing: auto-placement
+ * fills the slots in order. */
+@container (min-width: 760px) {
+  .form.twoColumns {
+    --urai-form-label-width: clamp(100px, 18%, 200px);
+
+    grid-template-columns: repeat(2, var(--urai-form-label-width) 1fr);
+    /* Doubles as the space between a field and the next pair's label, which
+     * the label track's own slack does not provide. */
+    column-gap: 1.5rem;
+  }
+}
+
+/* A `fullRow` field: its label goes back to the first track -- which, since
+ * placement never moves backwards, starts a new row if the current one is
+ * half full -- and its control takes everything after it. A no-op with one
+ * pair per row, where that is already where both go.
+ *
+ * Flat rather than nested: CSS modules reject a nested rule whose selector
+ * has no local class of its own ("not pure"). */
+.form > [data-urai-full-row] {
+  grid-column: 1;
+}
+
+.form > [data-urai-full-row] + * {
+  grid-column: 2 / -1;
+}
+
+/* Below this width every field's label and control stack into consecutive
+ * rows of a single column -- see `inputs.module.css`'s `.label` for the
+ * matching indent, and `Checkbox.tsx` for the one field type that instead
+ * collapses its two children into a single "checkbox + label" row. The
+ * breakpoint is `MOBILE_QUERY`'s, which `Checkbox` branches on in JS. */
+@media (max-width: 640px) {
+  .form {
+    grid-template-columns: 1fr;
+    row-gap: 0.75rem;
+  }
+
+  .form > [data-urai-full-row],
+  .form > [data-urai-full-row] + * {
+    grid-column: auto;
+  }
+}

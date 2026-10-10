@@ -51,6 +51,9 @@ export {
 
 /* -- Form inputs ---------------------------------------------------- */
 
+export type { FormProps } from "./form/Form";
+export { Form } from "./form/Form";
+
 export type { CheckboxProps } from "./inputs/Checkbox";
 export { Checkbox } from "./inputs/Checkbox";
 export { InputLabel } from "./inputs/InputLabel";

@@ -21,6 +21,7 @@ export const TextInput = (props: TextInputProps) => {
         defaultValue={props.defaultValue}
         required={props.required}
         disabled={props.disabled}
+        fullRow={props.fullRow}
       />
       <input
         ref={inputRef}
