@@ -68,6 +68,9 @@
 
 .value {
   padding-block: 0.75rem;
+  /* JSON has no spaces to wrap at, so a value line would otherwise widen
+   * the whole page on a phone. */
+  overflow-wrap: anywhere;
   color: var(--gray-700);
   font-size: 0.85rem;
   font-family: ui-monospace, monospace;
