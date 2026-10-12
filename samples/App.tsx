@@ -3,6 +3,7 @@ import { FaCircleHalfStroke, FaMoon, FaSun } from "react-icons/fa6";
 import { Button } from "../src";
 import { Badges } from "./sections/Badges";
 import { Buttons } from "./sections/Buttons";
+import { Diagrams } from "./sections/Diagrams";
 import { Inputs } from "./sections/Inputs";
 import { Dropdowns, Menus, Modals, Tooltips } from "./sections/Overlays";
 import { TemporalSamples } from "./sections/TemporalSamples";
@@ -66,6 +67,7 @@ export const App = () => {
       <Modals />
       <Inputs />
       <TemporalSamples />
+      <Diagrams />
     </main>
   );
 };

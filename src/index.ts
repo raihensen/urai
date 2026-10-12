@@ -26,6 +26,11 @@ export type {
 } from "./tooltip/Tooltip";
 export { Tooltip, useTooltip } from "./tooltip/Tooltip";
 
+/* -- Diagrams ------------------------------------------------------- */
+
+export type { DiagramDatum, DiagramProps } from "./diagram/Diagram";
+export { DIAGRAM_PALETTE_SIZE, Diagram, diagramColor } from "./diagram/Diagram";
+
 /* -- Overlays ------------------------------------------------------- */
 
 export type { ModalProps } from "./modal/Modal";
