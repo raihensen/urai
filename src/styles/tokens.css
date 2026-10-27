@@ -53,6 +53,23 @@
   --gray-alpha-700: rgba(var(--foreground-rgb), 0.7);
   --gray-alpha-800: rgba(var(--foreground-rgb), 0.8);
   --gray-alpha-900: rgba(var(--foreground-rgb), 0.9);
+
+  /* Categorical palette for `Diagram`, in this order. The order is part of
+     the colour-blind safety: neighbouring slots stay distinguishable under
+     protan/deutan/tritan simulation, checked as a ring (a pie's last slice
+     touches its first) for 3 to 6 slices. Validated against `--background`
+     in each theme; three light slots (aqua, yellow, magenta) are below 3:1
+     on white, which is why `Diagram` always shows a legend with values. */
+  --diagram-1: #2a78d6; /* blue */
+  --diagram-2: #eb6834; /* orange */
+  --diagram-3: #1baf7a; /* aqua */
+  --diagram-4: #eda100; /* yellow */
+  --diagram-5: #e87ba4; /* magenta */
+  --diagram-6: #008300; /* green */
+  --diagram-7: #6250d6; /* violet */
+  --diagram-8: #e34948; /* red */
+  /* The folded "Other" slice: neutral, never a ninth hue. */
+  --diagram-other: #adadad;
 }
 
 /* The grey ramp inverts rather than darkening: `--gray-100` stays "the one
@@ -86,6 +103,17 @@
   --gray-alpha-700: rgba(var(--foreground-rgb), 0.7);
   --gray-alpha-800: rgba(var(--foreground-rgb), 0.8);
   --gray-alpha-900: rgba(var(--foreground-rgb), 0.9);
+
+  /* Same hues, stepped for the dark background -- not an automatic flip. */
+  --diagram-1: #3987e5;
+  --diagram-2: #d95926;
+  --diagram-3: #199e70;
+  --diagram-4: #c98500;
+  --diagram-5: #d55181;
+  --diagram-6: #008300;
+  --diagram-7: #9085e9;
+  --diagram-8: #e66767;
+  --diagram-other: #555555;
 }
 
 [data-theme="dark"] {
@@ -126,5 +154,16 @@
     --gray-alpha-700: rgba(var(--foreground-rgb), 0.7);
     --gray-alpha-800: rgba(var(--foreground-rgb), 0.8);
     --gray-alpha-900: rgba(var(--foreground-rgb), 0.9);
+
+    /* Same hues, stepped for the dark background -- not an automatic flip. */
+    --diagram-1: #3987e5;
+    --diagram-2: #d95926;
+    --diagram-3: #199e70;
+    --diagram-4: #c98500;
+    --diagram-5: #d55181;
+    --diagram-6: #008300;
+    --diagram-7: #9085e9;
+    --diagram-8: #e66767;
+    --diagram-other: #555555;
   }
 }

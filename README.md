@@ -62,6 +62,36 @@ Values are `T | null`, not `""` — a cleared optional field is absent, not
 blank. Give a field a `defaultValue` and its label grows a checkbox that
 toggles the value between that default and `null`.
 
+### Diagrams
+
+`Diagram` with `type="pie"` (a `donut` option makes it a ring): the share of
+a whole, at a glance.
+
+```tsx
+<Diagram
+  type="pie"
+  title="Woche"
+  formatValue={v => `${v} h`}
+  data={[
+    { label: "Arbeit", value: 40 },
+    { label: "Schlaf", value: 56, color: "#6250d6" },
+  ]}
+/>
+```
+
+- Colours: an entry's own `color`, or the palette slot of its position in
+  `data` (`--diagram-1` … `--diagram-8` in `tokens.css`, light and dark
+  steps; `diagramColor(n)` gives the same value elsewhere). The order is
+  checked for colour-blind safety, including the pair where the ring
+  closes; a colour belongs to an entry, never to its rank.
+- Past `maxSlices` (default 6) the remaining entries fold into one neutral
+  "Other" slice (`otherLabel`) instead of getting a ninth hue.
+- A legend with values and shares is always shown, up to four slices carry
+  their percentage directly, slices hover with a tooltip, and a visually
+  hidden table gives screen readers the numbers.
+- A pie is the wrong form for comparing close values (bars) or a single
+  ratio (two slices: a number or a meter).
+
 ### Temporal
 
 Temporal values throughout. No `Date`, and no string dates in any prop.

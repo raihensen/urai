@@ -81,7 +81,12 @@ export const MenuItem = ({
       {/* Always rendered (even unselected/no icon), reserving a fixed
        * column so item text always lines up regardless of a sibling
        * item's own selected/icon state. */}
-      <span className={styles.menuItemBullet}>{props.selected && "●"}</span>
+      {/* The dot is drawn, not a "●" glyph: that comes from whichever font
+       * has it, often a fallback with its own line height, and the item
+       * grew or shrank with it. */}
+      <span className={styles.menuItemBullet} aria-hidden>
+        {props.selected && <span className={styles.menuItemDot} />}
+      </span>
       <span className={styles.menuItemIcon}>
         {props.icon && React.createElement(props.icon)}
       </span>
