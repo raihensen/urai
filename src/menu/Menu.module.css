@@ -44,7 +44,10 @@
     gap: 0.5rem;
     align-items: center;
     cursor: pointer;
-    padding-block: 0.5rem;
+    /* A fixed height, so nothing inside -- a selected dot, an icon, a
+     * fallback font -- can make one item taller than its neighbour. */
+    block-size: 2.5rem;
+    padding-block: 0;
     padding-inline: 1rem;
     margin-inline: -1rem;
 
@@ -68,19 +71,40 @@
      * selected. */
     .menuItemBullet {
       flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       inline-size: 0.75rem;
-      text-align: center;
       opacity: 0.8;
+    }
+
+    .menuItemDot {
+      inline-size: 0.4rem;
+      block-size: 0.4rem;
+      border-radius: 50%;
+      background: currentColor;
     }
 
     .menuItemIcon {
       flex: 0 0 auto;
+      display: flex;
+      align-items: center;
       inline-size: 20px;
     }
 
     .menuItemText {
       flex: 1 1 auto;
       font-size: 1rem;
+      /* The box is the capitals' height, so centring it in the row centres
+       * the caps -- in line with the dot and the icon -- rather than the
+       * line box, whose space above and below the letters differs per
+       * font. Where unsupported, the line box is centred as before. */
+      text-box: trim-both cap alphabetic;
+      /* Room for descenders below the trimmed box, which `overflow`
+       * (for the ellipsis) would cut off; the negative margin takes it
+       * back out of the layout, so the caps stay centred. */
+      padding-block-end: 0.3em;
+      margin-block-end: -0.3em;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
