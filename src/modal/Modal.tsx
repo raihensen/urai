@@ -108,6 +108,44 @@ export const Modal = ({
     };
   }, [isOpen, mounted]);
 
+  // Mobile bottom sheet: kept above the on-screen keyboard. The keyboard
+  // shrinks only the *visual* viewport (iOS, and Android's default), while
+  // the dialog is placed in the layout viewport -- so a sheet on the bottom
+  // edge stayed behind the keyboard, form and all. The part of the layout
+  // viewport the keyboard covers lifts the sheet's bottom, and the visual
+  // viewport's height caps its own; the focused field is scrolled back
+  // into view once the sheet has moved.
+  React.useEffect(() => {
+    const viewport = window.visualViewport;
+    const dialog = dialogRef.current;
+    if (!isOpen || !isMobile || !closable || !viewport || !dialog) {
+      return undefined;
+    }
+    const update = () => {
+      const keyboard = Math.max(
+        0,
+        window.innerHeight - viewport.height - viewport.offsetTop,
+      );
+      dialog.style.setProperty("--modal-keyboard", `${keyboard}px`);
+      dialog.style.setProperty("--modal-viewport", `${viewport.height}px`);
+      const focused = document.activeElement;
+      if (keyboard > 0 && focused instanceof HTMLElement) {
+        if (dialog.contains(focused)) {
+          focused.scrollIntoView({ block: "nearest" });
+        }
+      }
+    };
+    update();
+    viewport.addEventListener("resize", update);
+    viewport.addEventListener("scroll", update);
+    return () => {
+      viewport.removeEventListener("resize", update);
+      viewport.removeEventListener("scroll", update);
+      dialog.style.removeProperty("--modal-keyboard");
+      dialog.style.removeProperty("--modal-viewport");
+    };
+  }, [isOpen, isMobile, closable, mounted]);
+
   // Mobile-only. Two gestures share this one pointer stream, mutually
   // exclusive per-drag: dragging the header down closes the dialog (a
   // short tap/click still reaches `close` on the CSS-hidden-on-mobile

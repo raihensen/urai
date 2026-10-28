@@ -72,7 +72,14 @@
 
     inline-size: calc(100vw + 2px);
     max-inline-size: calc(100vw + 2px);
-    margin-block-end: 0;
+    /* Above the on-screen keyboard, and no taller than what it leaves of
+     * the screen: both set from `visualViewport` while a sheet is open
+     * (Modal.tsx), absent otherwise. */
+    margin-block-end: var(--modal-keyboard, 0px);
+    max-block-size: calc(
+      var(--modal-viewport, 100vh) - var(--modal-margin) -
+        var(--modal-margin-block-end)
+    );
   }
 }
 
