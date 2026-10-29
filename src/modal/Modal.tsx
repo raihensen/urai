@@ -70,6 +70,7 @@ export const Modal = ({
 }: ModalProps) => {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
   const headerRef = React.useRef<HTMLDivElement>(null);
+  const panelRef = React.useRef<HTMLDivElement>(null);
   const [zIndex, setZIndex] = React.useState<number>();
   const isMobile = useMediaQuery(MOBILE_QUERY);
 
@@ -101,9 +102,13 @@ export const Modal = ({
       // an element asks for it with `data-autofocus` (a new item's title).
       // A dialog answered through its footer keeps the default: the
       // focus on its first button.
+      //
+      // The panel inside takes it, not the <dialog>: Safari treats
+      // `dialog.focus()` like opening it and hands the focus on to the
+      // first field again.
       if (dialog && closable) {
         const wanted = dialog.querySelector<HTMLElement>("[data-autofocus]");
-        (wanted ?? dialog).focus();
+        (wanted ?? panelRef.current)?.focus({ preventScroll: true });
       }
       // Clear any leftover drag offset from a previous swipe-to-dismiss
       // attempt that sprang back instead of closing (see the effect below).
@@ -294,8 +299,6 @@ export const Modal = ({
     <dialog
       ref={dialogRef}
       className={classNames(styles.modal, !closable && styles.centered)}
-      // Focusable from script only: it takes the focus on opening (above).
-      tabIndex={-1}
       style={
         {
           zIndex,
@@ -315,7 +318,12 @@ export const Modal = ({
         if (closable && event.target === event.currentTarget) close();
       }}
     >
-      <div className={styles.panel}>
+      <div
+        ref={panelRef}
+        className={styles.panel}
+        // Focusable from script only: it takes the focus on opening (above).
+        tabIndex={-1}
+      >
         <div ref={headerRef} className={styles.header}>
           {closable && <div className={styles.handle} />}
           <h2 className={styles.title}>{title}</h2>
