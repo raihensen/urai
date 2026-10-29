@@ -94,6 +94,17 @@ export const Modal = ({
       nextZIndex += 1;
       setZIndex(nextZIndex);
       dialog?.showModal();
+      // `showModal()` focuses the first focusable element inside -- in a
+      // form, whatever field happens to come first, which then shows a
+      // focus ring (or, on a phone, a keyboard) nobody asked for. A dialog
+      // that has its own ways out takes the focus itself instead, unless
+      // an element asks for it with `data-autofocus` (a new item's title).
+      // A dialog answered through its footer keeps the default: the
+      // focus on its first button.
+      if (dialog && closable) {
+        const wanted = dialog.querySelector<HTMLElement>("[data-autofocus]");
+        (wanted ?? dialog).focus();
+      }
       // Clear any leftover drag offset from a previous swipe-to-dismiss
       // attempt that sprang back instead of closing (see the effect below).
       if (dialog) dialog.style.transform = "";
@@ -106,6 +117,7 @@ export const Modal = ({
     return () => {
       dialog?.close();
     };
+    // `closable` is read once, on opening; it doesn't change while open.
   }, [isOpen, mounted]);
 
   // Mobile bottom sheet: kept above the on-screen keyboard. The keyboard
@@ -282,6 +294,8 @@ export const Modal = ({
     <dialog
       ref={dialogRef}
       className={classNames(styles.modal, !closable && styles.centered)}
+      // Focusable from script only: it takes the focus on opening (above).
+      tabIndex={-1}
       style={
         {
           zIndex,

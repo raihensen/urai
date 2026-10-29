@@ -11,6 +11,12 @@
     display: none;
   }
 
+  /* Holds the focus itself on opening (Modal.tsx); that is no reason for
+     a ring around the whole dialog. */
+  &:focus {
+    outline: none;
+  }
+
   /* A flex column so `.panel` can fill the dialog as a flex item. Not
    * `block-size: 100%` on the panel: against this `fit-content` height
    * that percentage is circular, and WebKit resolved it to 0 -- every
