@@ -91,24 +91,55 @@ export const Modal = ({
     // null here, since the portaled <dialog> hasn't rendered yet.
     if (!mounted) return;
     const dialog = dialogRef.current;
+    const cleanups: (() => void)[] = [];
     if (isOpen) {
       nextZIndex += 1;
       setZIndex(nextZIndex);
-      dialog?.showModal();
       // `showModal()` focuses the first focusable element inside -- in a
       // form, whatever field happens to come first, which then shows a
       // focus ring (or, on a phone, a keyboard) nobody asked for. A dialog
-      // that has its own ways out takes the focus itself instead, unless
-      // an element asks for it with `data-autofocus` (a new item's title).
-      // A dialog answered through its footer keeps the default: the
-      // focus on its first button.
+      // that has its own ways out takes the focus itself instead (its
+      // panel, an ordinary element), unless an element asks for it with
+      // `data-autofocus` (a new item's title). A dialog answered through
+      // its footer keeps the default: the focus on its first button.
       //
-      // The panel inside takes it, not the <dialog>: Safari treats
-      // `dialog.focus()` like opening it and hands the focus on to the
-      // first field again.
-      if (dialog && closable) {
-        const wanted = dialog.querySelector<HTMLElement>("[data-autofocus]");
-        (wanted ?? panelRef.current)?.focus({ preventScroll: true });
+      // Said with the `autofocus` attribute, which `showModal()` itself
+      // honours: focusing the panel afterwards was not enough in Safari,
+      // which had already put the focus on the first field (and then kept
+      // it there). Focused once more, in case a browser ignores the
+      // attribute, and again in the next frame, in case one moves the
+      // focus on after this task.
+      const target =
+        dialog && closable
+          ? (dialog.querySelector<HTMLElement>("[data-autofocus]") ??
+            panelRef.current)
+          : null;
+      dialog
+        ?.querySelectorAll("[autofocus]")
+        .forEach(element => element.removeAttribute("autofocus"));
+      target?.setAttribute("autofocus", "");
+      dialog?.showModal();
+      target?.focus({ preventScroll: true });
+      if (target) {
+        const takeBack = requestAnimationFrame(() => {
+          const active = document.activeElement;
+          // Only from another element in the dialog -- never from what
+          // the user may already have tapped elsewhere.
+          if (active !== target && dialog?.contains(active) && !userActed) {
+            target.focus({ preventScroll: true });
+          }
+        });
+        let userActed = false;
+        const onUser = () => {
+          userActed = true;
+        };
+        dialog?.addEventListener("pointerdown", onUser, { once: true });
+        dialog?.addEventListener("keydown", onUser, { once: true });
+        cleanups.push(() => {
+          cancelAnimationFrame(takeBack);
+          dialog?.removeEventListener("pointerdown", onUser);
+          dialog?.removeEventListener("keydown", onUser);
+        });
       }
       // Clear any leftover drag offset from a previous swipe-to-dismiss
       // attempt that sprang back instead of closing (see the effect below).
@@ -120,6 +151,7 @@ export const Modal = ({
     // mount again) doesn't call `showModal()` on an already-open dialog,
     // which throws and aborts the rest of the effect.
     return () => {
+      cleanups.forEach(cleanup => cleanup());
       dialog?.close();
     };
     // `closable` is read once, on opening; it doesn't change while open.
